@@ -7,12 +7,12 @@ Specifically, I believe BTC will crash again as it did in Dec 2022, and I also b
 This script features two modes for investment, flat and aggressive. Flat is just that: spending the same at each step. Aggressive is based on a geometric progression: spending more at lower steps.
 
 ```
-python3 coinbase-dca.py BTC-USD flat 80000 1000 250 80
-python3 coinbase-dca.py DOGE-USD flat 0.12 0.01 0.01 100
-python3 coinbase-dca.py LTC-USD flat 70 5 5 50
-```
-The above example creates limit buy orders in BTC-USD, beginning at the $80,000 level and ending at the $1,000 level, and placing orders for $80 at each $250 step (80000, 79750, 79500, etc).
+# create orders BTC-USD starting at $80,000 and ending at $22,000, at every $250 step, investing $1000
+python3 coinbase-dca.py BTC-USD flat 80000 22000 250 1000
 
-```
-python3 coinbase-dca.py BTC-USD aggr 80000 22000 250 n
+# create orders LTC-USD starting at $80,000 and ending at $22,000, at every $250 step, investing $1000
+python3 coinbase-dca.py LTC-USD flat 70 20 5 1000
+
+# create orders starting at $80,000 and ending at $22,000, at every $250 step, investing $20000
+python3 coinbase-dca.py BTC-USD aggr 80000 22000 250 20000
 ```
