@@ -8,18 +8,44 @@
 import sys
 import time
 import uuid
+import argparse
 from coinbase.rest import RESTClient
 
 API_KEY = ""
 API_SECRET = """"""
 
 def main():
-    product_id = sys.argv[1]
-    mode = sys.argv[2]
-    price_high = float(sys.argv[3])
-    price_low = float(sys.argv[4])
-    price_step = float(sys.argv[5])
-    total_usd = float(sys.argv[6])
+    parser = argparse.ArgumentParser()
+    parser.add_argument("product_id", nargs="?", default="")
+    parser.add_argument("mode", nargs="?", default="")
+    parser.add_argument("price_high", nargs="?", type=float, default=0)
+    parser.add_argument("price_low", nargs="?", type=float, default=0)
+    parser.add_argument("price_step", nargs="?", type=float, default=0)
+    parser.add_argument("total_usd", nargs="?", type=float, default=0)
+
+    args = parser.parse_args()
+
+    product_id = args.product_id
+    mode = args.mode
+    price_high = args.price_high
+    price_low = args.price_low
+    price_step = args.price_step
+    total_usd = args.total_usd
+
+    # old code
+    # product_id = sys.argv[1]
+    # mode = sys.argv[2]
+    # price_high = float(sys.argv[3])
+    # price_low = float(sys.argv[4])
+    # price_step = float(sys.argv[5])
+    # total_usd = float(sys.argv[6])
+
+    client = RESTClient(api_key=API_KEY, api_secret=API_SECRET)
+
+    if product_id == "test":
+        print(client.get_accounts())
+        # print("test passed")
+        sys.exit(1)
 
     price_range = price_high - price_low
     number_of_orders = round(price_range / price_step)
@@ -29,19 +55,10 @@ def main():
 
     round_to = 8
 
-    # # for testing
-    # client = RESTClient(api_key=API_KEY, api_secret=API_SECRET)
-    # print(client.get_accounts())
-
-    if len(sys.argv) != 7:
-        print("usage: python coinbase-dca.py <product_id> <mode> <price_high> <price_low> <price_step> <total_usd>")
-        sys.exit(1)
-
-    if mode != "flat" and mode != "aggr":
-        print("mode must be 'flat' or 'aggr'")
-        sys.exit(1)
-
-    client = RESTClient(api_key=API_KEY, api_secret=API_SECRET)
+    # old code
+    # if len(sys.argv) != 7:
+    #     print("usage: python coinbase-dca.py <product_id> <mode> <price_high> <price_low> <price_step> <total_usd>")
+    #     sys.exit(1)
 
     while price >= price_low:
         if mode == "flat":
@@ -91,17 +108,17 @@ def main():
 
             print(f"placing limit buy: ${usd_per_order} (~{base_size} ${product_id}) @ ${price}")
 
-        client.create_order(
-            client_order_id=str(uuid.uuid4()),
-            product_id=product_id,
-            side="BUY",
-            order_configuration={
-                "limit_limit_gtc": {
-                    "base_size": str(base_size),
-                    "limit_price": str(price)
-                }
-            }
-        )
+        # client.create_order(
+        #     client_order_id=str(uuid.uuid4()),
+        #     product_id=product_id,
+        #     side="BUY",
+        #     order_configuration={
+        #         "limit_limit_gtc": {
+        #             "base_size": str(base_size),
+        #             "limit_price": str(price)
+        #         }
+        #     }
+        # )
 
         price -= price_step
         price = round(price, 2)
