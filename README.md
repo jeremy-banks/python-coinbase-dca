@@ -31,14 +31,14 @@ example
 ## Instructions
 
 ```
-# create orders BTC-USD starting at $80,000 and ending at $22,000, at every $250 step, investing $1000
+# create orders BTC-USD starting at $80,000 and ending at $22,000, at every $250 step, investing $1,000 total
 python3 coinbase-dca.py BTC-USD flat 80000 22000 250 1000
 
-# create orders LTC-USD starting at $80,000 and ending at $22,000, at every $250 step, investing $1000
+# create orders LTC-USD starting at $70 and ending at $20, at every $5 step, investing $1,000 total
 python3 coinbase-dca.py LTC-USD flat 70 20 5 1000
 
-# create orders starting at $80,000 and ending at $22,000, at every $250 step, investing $20000
-python3 coinbase-dca.py BTC-USD aggr 80000 22000 250 20000
+# create orders starting at $80,000 and ending at $22,000, at every $250 step, investing $20,000 total, 15% difference
+python3 coinbase-dca.py BTC-USD aggr 80000 22000 250 20000 15
 ```
 
 ### Tiered Investment
