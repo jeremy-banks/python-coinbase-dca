@@ -1,90 +1,69 @@
 #!/usr/bin/env python3
-# coinbase-dca.py
-# pip install coinbase-advanced-py
-# python3 -m pip install coinbase-advanced-py --break-system-packages
-
-# python3 coinbase-dca.py BTC-USD 80000 1000 250 80
 
 import sys
 import time
 import uuid
+import argparse
 from coinbase.rest import RESTClient
 
 API_KEY = ""
 API_SECRET = """"""
 
 def main():
-    product_id = sys.argv[1]
-    mode = sys.argv[2]
-    price_high = float(sys.argv[3])
-    price_low = float(sys.argv[4])
-    price_step = float(sys.argv[5])
-    total_usd = float(sys.argv[6])
+    parser = argparse.ArgumentParser()
+    parser.add_argument("product_id", nargs="?", default="")
+    parser.add_argument("mode", nargs="?", default="")
+    parser.add_argument("price_high", nargs="?", type=float, default=0)
+    parser.add_argument("price_low", nargs="?", type=float, default=0)
+    parser.add_argument("price_step", nargs="?", type=float, default=0)
+    parser.add_argument("total_usd", nargs="?", type=float, default=0)
+    parser.add_argument("aggr_mod", nargs="?", type=float, default=0)
+
+    args = parser.parse_args()
+
+    product_id = args.product_id
+    mode = args.mode
+    price_high = args.price_high
+    price_low = args.price_low
+    price_step = args.price_step
+    total_usd = args.total_usd
+    aggr_mod = args.aggr_mod
+
+    client = RESTClient(api_key=API_KEY, api_secret=API_SECRET)
+
+    if product_id == "test":
+        print(client.get_accounts())
+        sys.exit(1)
 
     price_range = price_high - price_low
     number_of_orders = round(price_range / price_step)
 
     price = price_high
-    usd_per_order = 0
+    aggr_price_threshold_med = round(price_high * 0.66, 2)
+    aggr_price_threshold_low = round(price_high * 0.33, 2)
+
+    usd_per_order = round(total_usd / number_of_orders, 2)
+    aggr_usd_per_order_high = round(usd_per_order * (100 + aggr_mod) / 100, 2)
+    aggr_usd_per_order_med = usd_per_order
+    aggr_usd_per_order_low = round(usd_per_order * (1 - aggr_mod / 100), 2)
 
     round_to = 8
 
-    # # for testing
-    # client = RESTClient(api_key=API_KEY, api_secret=API_SECRET)
-    # print(client.get_accounts())
-
-    if len(sys.argv) != 7:
-        print("usage: python coinbase-dca.py <product_id> <mode> <price_high> <price_low> <price_step> <total_usd>")
-        sys.exit(1)
-
-    if mode != "flat" and mode != "aggr":
-        print("mode must be 'flat' or 'aggr'")
-        sys.exit(1)
-
-    client = RESTClient(api_key=API_KEY, api_secret=API_SECRET)
-
     while price >= price_low:
-        if mode == "flat":
-            # print("flat")
-            usd_per_order = round(total_usd / number_of_orders, 2)
 
+        if mode == "flat":
             base_size = round(usd_per_order / price, round_to)
             base_size = f"{base_size:.{round_to}f}"
             
             print(f"placing limit buy: ${usd_per_order} (~{base_size} ${product_id}) @ ${price}")
+
         elif mode == "aggr":
-            # print("aggr")
-            # print(price)
-
-            price_1x = price_high
-            price_2x = price_high - price_range * 0.125   # 12.5% drop from high
-            price_4x = price_high - price_range * 0.25    # 25% drop from high
-            price_8x = price_high - price_range * 0.5     # 50% drop from high
-
-            # print(price_1x)
-            # print(price_2x)
-            # print(price_4x)
-            # print(price_8x)
-
-            if price <= price_8x:
-                # print("8x")
-                # print(round((total_usd * 0.50) / number_of_orders, 2))
-                usd_per_order = round((total_usd * 0.50) / number_of_orders, 2)
-            elif price <= price_4x:
-                # print("4x")
-                # print(round((total_usd * 0.50 * 0.50) / number_of_orders, 2))
-                usd_per_order = round((total_usd * 0.50 * 0.50) / number_of_orders, 2)
-            elif price <= price_2x:
-                # print("2x")
-                # print(round((total_usd * 0.50 * 0.50 * 0.50) / number_of_orders, 2))
-                usd_per_order = round((total_usd * 0.50 * 0.50 * 0.50) / number_of_orders, 2)
-            elif price > price_2x:
-                # print("1x")
-                # print(round((total_usd * 0.50 * 0.50 * 0.50 * 0.50) / number_of_orders, 2))
-                usd_per_order = round((total_usd * 0.50 * 0.50 * 0.50 * 0.50) / number_of_orders, 2)
+            if price > aggr_price_threshold_med:
+                usd_per_order = aggr_usd_per_order_low
+            elif price <= aggr_price_threshold_low:
+                usd_per_order = aggr_usd_per_order_high
             else:
-                print("ERROR")
-                sys.exit(1)
+                usd_per_order = aggr_usd_per_order_med
 
             base_size = round(usd_per_order / price, round_to)
             base_size = f"{base_size:.{round_to}f}"
