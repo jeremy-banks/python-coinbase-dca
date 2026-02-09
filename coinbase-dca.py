@@ -52,45 +52,94 @@ def main():
         aggr_usd_per_order_med = usd_per_order
         aggr_usd_per_order_low = round(usd_per_order * (1 - aggr_mod / 100), 2)
 
+        while price >= price_end:
+
+            if mode == "flat":
+                base_size = round(usd_per_order / price, round_to)
+                base_size = f"{base_size:.{round_to}f}"
+                
+                print(f"placing limit buy: ${usd_per_order} (~{base_size} ${product_id}) @ ${price}")
+
+            elif mode == "aggr":
+                if price > aggr_price_threshold_med:
+                    usd_per_order = aggr_usd_per_order_low
+                elif price <= aggr_price_threshold_low:
+                    usd_per_order = aggr_usd_per_order_high
+                else:
+                    usd_per_order = aggr_usd_per_order_med
+
+                base_size = round(usd_per_order / price, round_to)
+                base_size = f"{base_size:.{round_to}f}"
+
+                print(f"placing limit buy: ${usd_per_order} (~{base_size} ${product_id}) @ ${price}")
+
+            # client.create_order(
+            #     client_order_id=str(uuid.uuid4()),
+            #     product_id=product_id,
+            #     side="BUY",
+            #     order_configuration={
+            #         "limit_limit_gtc": {
+            #             "base_size": str(base_size),
+            #             "limit_price": str(price)
+            #         }
+            #     }
+            # )
+
+            price -= price_step
+            price = round(price, 2)
+            time.sleep(0.2) # rate limit
+
     elif side == "sell":
-        sys.exit(1)
+        price_range = price_start + price_end
+        number_of_orders = round(price_range / price_step)
 
-    while price >= price_end:
+        price = price_start
+        aggr_price_threshold_med = round(price_end * 0.66, 2)
+        aggr_price_threshold_low = round(price_end * 0.33, 2)
 
-        if mode == "flat":
-            base_size = round(usd_per_order / price, round_to)
-            base_size = f"{base_size:.{round_to}f}"
-            
-            print(f"placing limit buy: ${usd_per_order} (~{base_size} ${product_id}) @ ${price}")
+        usd_per_order = round(total_usd / number_of_orders, 2)
+        aggr_usd_per_order_high = round(usd_per_order * (100 + aggr_mod) / 100, 2)
+        aggr_usd_per_order_med = usd_per_order
+        aggr_usd_per_order_low = round(usd_per_order * (1 - aggr_mod / 100), 2)
 
-        elif mode == "aggr":
-            if price > aggr_price_threshold_med:
-                usd_per_order = aggr_usd_per_order_low
-            elif price <= aggr_price_threshold_low:
-                usd_per_order = aggr_usd_per_order_high
-            else:
-                usd_per_order = aggr_usd_per_order_med
+        print(aggr_usd_per_order_med)
 
-            base_size = round(usd_per_order / price, round_to)
-            base_size = f"{base_size:.{round_to}f}"
+        while price <= price_end:
 
-            print(f"placing limit buy: ${usd_per_order} (~{base_size} ${product_id}) @ ${price}")
+            if mode == "flat":
+                base_size = round(usd_per_order / price, round_to)
+                base_size = f"{base_size:.{round_to}f}"
+                
+                print(f"placing limit sell: ${usd_per_order} (~{base_size} ${product_id}) @ ${price}")
 
-        # client.create_order(
-        #     client_order_id=str(uuid.uuid4()),
-        #     product_id=product_id,
-        #     side="BUY",
-        #     order_configuration={
-        #         "limit_limit_gtc": {
-        #             "base_size": str(base_size),
-        #             "limit_price": str(price)
-        #         }
-        #     }
-        # )
+            elif mode == "aggr":
+                if price < aggr_price_threshold_low:
+                    usd_per_order = aggr_usd_per_order_low
+                elif price >= aggr_price_threshold_med:
+                    usd_per_order = aggr_usd_per_order_high
+                else:
+                    usd_per_order = aggr_usd_per_order_med
 
-        price -= price_step
-        price = round(price, 2)
-        time.sleep(0.2) # rate limit
+                base_size = round(usd_per_order / price, round_to)
+                base_size = f"{base_size:.{round_to}f}"
+
+                print(f"placing limit sell: ${usd_per_order} (~{base_size} ${product_id}) @ ${price}")
+
+            # client.create_order(
+            #     client_order_id=str(uuid.uuid4()),
+            #     product_id=product_id,
+            #     side="BUY",
+            #     order_configuration={
+            #         "limit_limit_gtc": {
+            #             "base_size": str(base_size),
+            #             "limit_price": str(price)
+            #         }
+            #     }
+            # )
+
+            price += price_step
+            price = round(price, 2)
+            time.sleep(0.2) # rate limit
 
 if __name__ == "__main__":
     main()
