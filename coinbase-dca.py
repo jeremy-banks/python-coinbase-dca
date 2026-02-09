@@ -11,45 +11,51 @@ API_SECRET = """"""
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("side", nargs="?", default="")
     parser.add_argument("product_id", nargs="?", default="")
     parser.add_argument("mode", nargs="?", default="")
-    parser.add_argument("price_high", nargs="?", type=float, default=0)
-    parser.add_argument("price_low", nargs="?", type=float, default=0)
+    parser.add_argument("price_start", nargs="?", type=float, default=0)
+    parser.add_argument("price_end", nargs="?", type=float, default=0)
     parser.add_argument("price_step", nargs="?", type=float, default=0)
     parser.add_argument("total_usd", nargs="?", type=float, default=0)
     parser.add_argument("aggr_mod", nargs="?", type=float, default=0)
 
     args = parser.parse_args()
 
+    side = args.side
     product_id = args.product_id
     mode = args.mode
-    price_high = args.price_high
-    price_low = args.price_low
+    price_start = args.price_start
+    price_end = args.price_end
     price_step = args.price_step
     total_usd = args.total_usd
     aggr_mod = args.aggr_mod
 
+    round_to = 8
+
     client = RESTClient(api_key=API_KEY, api_secret=API_SECRET)
 
-    if product_id == "test":
+    if side == "test":
         print(client.get_accounts())
         sys.exit(1)
 
-    price_range = price_high - price_low
-    number_of_orders = round(price_range / price_step)
+    if side == "buy":
+        price_range = price_start - price_end
+        number_of_orders = round(price_range / price_step)
 
-    price = price_high
-    aggr_price_threshold_med = round(price_high * 0.66, 2)
-    aggr_price_threshold_low = round(price_high * 0.33, 2)
+        price = price_start
+        aggr_price_threshold_med = round(price_start * 0.66, 2)
+        aggr_price_threshold_low = round(price_start * 0.33, 2)
 
-    usd_per_order = round(total_usd / number_of_orders, 2)
-    aggr_usd_per_order_high = round(usd_per_order * (100 + aggr_mod) / 100, 2)
-    aggr_usd_per_order_med = usd_per_order
-    aggr_usd_per_order_low = round(usd_per_order * (1 - aggr_mod / 100), 2)
+        usd_per_order = round(total_usd / number_of_orders, 2)
+        aggr_usd_per_order_high = round(usd_per_order * (100 + aggr_mod) / 100, 2)
+        aggr_usd_per_order_med = usd_per_order
+        aggr_usd_per_order_low = round(usd_per_order * (1 - aggr_mod / 100), 2)
 
-    round_to = 8
+    elif side == "sell":
+        sys.exit(1)
 
-    while price >= price_low:
+    while price >= price_end:
 
         if mode == "flat":
             base_size = round(usd_per_order / price, round_to)
@@ -70,17 +76,17 @@ def main():
 
             print(f"placing limit buy: ${usd_per_order} (~{base_size} ${product_id}) @ ${price}")
 
-        client.create_order(
-            client_order_id=str(uuid.uuid4()),
-            product_id=product_id,
-            side="BUY",
-            order_configuration={
-                "limit_limit_gtc": {
-                    "base_size": str(base_size),
-                    "limit_price": str(price)
-                }
-            }
-        )
+        # client.create_order(
+        #     client_order_id=str(uuid.uuid4()),
+        #     product_id=product_id,
+        #     side="BUY",
+        #     order_configuration={
+        #         "limit_limit_gtc": {
+        #             "base_size": str(base_size),
+        #             "limit_price": str(price)
+        #         }
+        #     }
+        # )
 
         price -= price_step
         price = round(price, 2)
