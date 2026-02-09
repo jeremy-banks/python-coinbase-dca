@@ -43,14 +43,24 @@ def main():
         price_range = price_start - price_end
         number_of_orders = round(price_range / price_step)
 
+        # print(price_range)
+
         price = price_start
-        aggr_price_threshold_med = round(price_start * 0.66, 2)
-        aggr_price_threshold_low = round(price_start * 0.33, 2)
+        aggr_price_threshold_med = round(price_start + (price_end - price_start) * 0.66, 2)
+        aggr_price_threshold_low = round(price_start + (price_end - price_start) * 0.33, 2)
+
+        print(price_start)
+        print(aggr_price_threshold_med)
+        print(aggr_price_threshold_low)
 
         usd_per_order = round(total_usd / number_of_orders, 2)
-        aggr_usd_per_order_high = round(usd_per_order * (100 + aggr_mod) / 100, 2)
+        aggr_usd_per_order_high = round(usd_per_order * 1.34, 2)
         aggr_usd_per_order_med = usd_per_order
-        aggr_usd_per_order_low = round(usd_per_order * (1 - aggr_mod / 100), 2)
+        aggr_usd_per_order_low = round(usd_per_order * 0.66, 2)
+
+        print(aggr_usd_per_order_high)
+        print(aggr_usd_per_order_med)
+        print(aggr_usd_per_order_low)
 
         while price >= price_end:
 
@@ -90,19 +100,29 @@ def main():
             time.sleep(0.2) # rate limit
 
     elif side == "sell":
-        price_range = price_start + price_end
+        price_range = price_end - price_start
         number_of_orders = round(price_range / price_step)
 
+        # print(price_range)
+
         price = price_start
-        aggr_price_threshold_med = round(price_end * 0.66, 2)
-        aggr_price_threshold_low = round(price_end * 0.33, 2)
+        aggr_price_threshold_med = round(price_start + (price_end - price_start) * 0.66, 2)
+        aggr_price_threshold_low = round(price_start + (price_end - price_start) * 0.33, 2)
+
+        print(price)
+        print(aggr_price_threshold_med)
+        print(aggr_price_threshold_low)
 
         usd_per_order = round(total_usd / number_of_orders, 2)
-        aggr_usd_per_order_high = round(usd_per_order * (100 + aggr_mod) / 100, 2)
+        aggr_usd_per_order_high = round(usd_per_order * 1.34, 2)
         aggr_usd_per_order_med = usd_per_order
-        aggr_usd_per_order_low = round(usd_per_order * (1 - aggr_mod / 100), 2)
+        aggr_usd_per_order_low = round(usd_per_order * 0.66, 2)
 
+        print(aggr_usd_per_order_high)
         print(aggr_usd_per_order_med)
+        print(aggr_usd_per_order_low)
+
+        # print(aggr_usd_per_order_med)
 
         while price <= price_end:
 
