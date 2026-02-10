@@ -39,19 +39,19 @@ def main():
         print(client.get_accounts())
         sys.exit(1)
 
+    price = price_start
+    aggr_price_threshold_med = round(price_start + (price_end - price_start) * 0.66, 2)
+    aggr_price_threshold_low = round(price_start + (price_end - price_start) * 0.33, 2)
+
+    print(price_start)
+    print(aggr_price_threshold_med)
+    print(aggr_price_threshold_low)
+
     if side == "buy":
         price_range = price_start - price_end
         number_of_orders = round(price_range / price_step)
 
         # print(price_range)
-
-        price = price_start
-        aggr_price_threshold_med = round(price_start + (price_end - price_start) * 0.66, 2)
-        aggr_price_threshold_low = round(price_start + (price_end - price_start) * 0.33, 2)
-
-        print(price_start)
-        print(aggr_price_threshold_med)
-        print(aggr_price_threshold_low)
 
         usd_per_order = round(total_usd / number_of_orders, 2)
         aggr_usd_per_order_high = round(usd_per_order * 1.34, 2)
@@ -105,13 +105,13 @@ def main():
 
         # print(price_range)
 
-        price = price_start
-        aggr_price_threshold_med = round(price_start + (price_end - price_start) * 0.66, 2)
-        aggr_price_threshold_low = round(price_start + (price_end - price_start) * 0.33, 2)
+        # price = price_start
+        # aggr_price_threshold_med = round(price_start + (price_end - price_start) * 0.66, 2)
+        # aggr_price_threshold_low = round(price_start + (price_end - price_start) * 0.33, 2)
 
-        print(price)
-        print(aggr_price_threshold_med)
-        print(aggr_price_threshold_low)
+        # print(price)
+        # print(aggr_price_threshold_med)
+        # print(aggr_price_threshold_low)
 
         usd_per_order = round(total_usd / number_of_orders, 2)
         aggr_usd_per_order_high = round(usd_per_order * 1.34, 2)
