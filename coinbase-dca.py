@@ -85,17 +85,17 @@ def main():
 
             print(f"placing limit buy: ${usd_per_order} (~{base_size} ${product_id}) @ ${price}")
 
-            # client.create_order(
-            #     client_order_id=str(uuid.uuid4()),
-            #     product_id=product_id,
-            #     side="BUY",
-            #     order_configuration={
-            #         "limit_limit_gtc": {
-            #             "base_size": str(base_size),
-            #             "limit_price": str(price)
-            #         }
-            #     }
-            # )
+            client.create_order(
+                client_order_id=str(uuid.uuid4()),
+                product_id=product_id,
+                side="BUY",
+                order_configuration={
+                    "limit_limit_gtc": {
+                        "base_size": str(base_size),
+                        "limit_price": str(price)
+                    }
+                }
+            )
 
             price -= price_step
             price = round(price, 2)
@@ -122,17 +122,17 @@ def main():
 
             print(f"placing limit sell: ${usd_per_order} (~{base_size} ${product_id}) @ ${price}")
 
-            # client.create_order(
-            #     client_order_id=str(uuid.uuid4()),
-            #     product_id=product_id,
-            #     side="BUY",
-            #     order_configuration={
-            #         "limit_limit_gtc": {
-            #             "base_size": str(base_size),
-            #             "limit_price": str(price)
-            #         }
-            #     }
-            # )
+            client.create_order(
+                client_order_id=str(uuid.uuid4()),
+                product_id=product_id,
+                side="SELL",
+                order_configuration={
+                    "limit_limit_gtc": {
+                        "base_size": str(base_size),
+                        "limit_price": str(price)
+                    }
+                }
+            )
 
             price += price_step
             price = round(price, 2)
