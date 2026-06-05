@@ -8,7 +8,7 @@ I wrote that in Dec, and am updating this script in Feb after the dip to 60k. Th
 
 ## WARNING
 
-THIS SCRIPT IS TESTED ONLY BTC-USD AND LTC-USD, DOGE-USD IS NOT FUNCTIONING CORRECTLY. USE AT YOUR OWN RISK.
+Only tested with BTC-USD, LTC-USD and DOGE-USD. ***USE AT YOUR OWN RISK!!!***
 
 ## Set Up
 
