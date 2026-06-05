@@ -31,7 +31,12 @@ def main():
     total_usd = args.total_usd
     aggr_mod = args.aggr_mod
 
-    round_to = 8
+    round_to_base_size = 8
+    round_to_price = 2
+
+    if product_id == "DOGE-USD":
+        round_to_base_size = 1
+        round_to_price = 5
 
     client = RESTClient(api_key=API_KEY, api_secret=API_SECRET)
 
@@ -40,8 +45,8 @@ def main():
         sys.exit(1)
 
     price = price_start
-    aggr_price_threshold_med = round(price_start + (price_end - price_start) * 0.33, 2)
-    aggr_price_threshold_low = round(price_start + (price_end - price_start) * 0.66, 2)
+    aggr_price_threshold_med = round(price_start + (price_end - price_start) * 0.33, round_to_price)
+    aggr_price_threshold_low = round(price_start + (price_end - price_start) * 0.66, round_to_price)
     # print(price_start)
     # print(aggr_price_threshold_med)
     # print(aggr_price_threshold_low)
@@ -52,14 +57,13 @@ def main():
         price_range = price_end - price_start
     else:
         price_range = 0
-    # print(price_range)
 
     number_of_orders = round(price_range / price_step)
 
-    usd_per_order = round(total_usd / number_of_orders, 2)
-    aggr_usd_per_order_high = round(usd_per_order * 1.34, 2)
-    aggr_usd_per_order_med = usd_per_order
-    aggr_usd_per_order_low = round(usd_per_order * 0.66, 2)
+    usd_per_order = total_usd / number_of_orders
+    aggr_usd_per_order_high = round(usd_per_order * 1.34, round_to_price)
+    aggr_usd_per_order_med = round(usd_per_order, round_to_price)
+    aggr_usd_per_order_low = round(usd_per_order * 0.66, round_to_price)
     # print(aggr_usd_per_order_high)
     # print(aggr_usd_per_order_med)
     # print(aggr_usd_per_order_low)
@@ -69,8 +73,8 @@ def main():
         while price >= price_end:
 
             if mode == "flat":
-                base_size = round(usd_per_order / price, round_to)
-                base_size = f"{base_size:.{round_to}f}"
+                base_size = round(usd_per_order / price, round_to_base_size)
+                base_size = f"{base_size:.{round_to_base_size}f}"
 
             elif mode == "aggr":
                 if price >= aggr_price_threshold_med:
@@ -80,8 +84,7 @@ def main():
                 else:
                     usd_per_order = aggr_usd_per_order_med
 
-                base_size = round(usd_per_order / price, round_to)
-                base_size = f"{base_size:.{round_to}f}"
+                base_size = round(usd_per_order / price, round_to_base_size)
 
             print(f"placing limit buy: ${usd_per_order} (~{base_size} ${product_id}) @ ${price}")
 
@@ -98,7 +101,7 @@ def main():
             )
 
             price -= price_step
-            price = round(price, 2)
+            price = round(price, round_to_price)
             time.sleep(0.2) # rate limit
 
     elif side == "sell":
@@ -106,8 +109,8 @@ def main():
         while price <= price_end:
 
             if mode == "flat":
-                base_size = round(usd_per_order / price, round_to)
-                base_size = f"{base_size:.{round_to}f}"
+                base_size = round(usd_per_order / price, round_to_base_size)
+                base_size = f"{base_size:.{round_to_base_size}f}"
 
             elif mode == "aggr":
                 if price <= aggr_price_threshold_med:
@@ -117,8 +120,7 @@ def main():
                 else:
                     usd_per_order = aggr_usd_per_order_med
 
-                base_size = round(usd_per_order / price, round_to)
-                base_size = f"{base_size:.{round_to}f}"
+                base_size = round(usd_per_order / price, round_to_base_size)
 
             print(f"placing limit sell: ${usd_per_order} (~{base_size} ${product_id}) @ ${price}")
 
@@ -135,7 +137,7 @@ def main():
             )
 
             price += price_step
-            price = round(price, 2)
+            price = round(price, round_to_price)
             time.sleep(0.2) # rate limit
 
 if __name__ == "__main__":
