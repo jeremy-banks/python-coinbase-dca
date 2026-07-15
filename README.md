@@ -37,6 +37,11 @@ python3 coinbase-dca.py test
 
 Output should dump a list of accounts.
 
+### Flat vs Aggr
+This script features two modes of buying and selling: flat and aggresive. Flat means every buy or sell order is for the same amount, for example $100. Aggressive means orders are split into thirds, with the first third of orders placed being 1/3 lower amount, annd the last third of orders placed being 1/3 higher. This allows your orders to invest more as the volatility increases.
+
+In the future I would like to implement a smooth gradient of aggressive price changes.
+
 ### Buy
 
 #### BTC-USD
@@ -48,11 +53,11 @@ python3 coinbase-dca.py buy BTC-USD aggr 100000 25000 250 1000
 ```
 
 #### DOGE-USD
-create orders to buy DOGE-USD starting at $70 and ending at $20, at every $5 step, spending $1,000 total
+create orders to buy DOGE-USD starting at $0.50 and ending at $0.05, at every $0.005 step, spending $1,000 total
 
 ```
-python3 coinbase-dca.py buy DOGE-USD flat 70 20 5 1000
-python3 coinbase-dca.py buy DOGE-USD aggr 70 20 5 1000
+python3 coinbase-dca.py buy DOGE-USD flat 0.5 0.05 0.005 1000
+python3 coinbase-dca.py buy DOGE-USD aggr 0.5 0.05 0.005 1000
 ```
 
 #### LTC-USD
@@ -74,17 +79,17 @@ python3 coinbase-dca.py sell BTC-USD aggr 100000 300000 250 1.00470762
 ```
 
 #### DOGE-USD
-create orders selling DOGE-USD starting at $20 and ending at $70, at every $5 step, selling 1.00470762 BTC total
+create orders selling DOGE-USD starting at $0.50 and ending at $2.00, at every $0.005 step, selling 10000.5 DOGE total
 
 ```
-python3 coinbase-dca.py sell DOGE-USD flat 20 70 5 1.00470762
-python3 coinbase-dca.py sell DOGE-USD aggr 20 70 5 1.00470762
+python3 coinbase-dca.py sell DOGE-USD flat 0.5 2 0.005 10000.5
+python3 coinbase-dca.py sell DOGE-USD aggr 0.5 2 0.005 10000.5
 ```
 
 #### LTC-USD
-create orders selling LTC-USD starting at $20 and ending at $70, at every $5 step, selling 1.00470762 BTC total
+create orders selling LTC-USD starting at $150 and ending at $500, at every $5 step, selling 114.07908907 LTC total
 
 ```
-python3 coinbase-dca.py sell LTC-USD flat 20 70 5 1.00470762
-python3 coinbase-dca.py sell LTC-USD aggr 20 70 5 1.00470762
+python3 coinbase-dca.py sell LTC-USD flat 20 70 5 114.07908907
+python3 coinbase-dca.py sell LTC-USD aggr 20 70 5 114.07908907
 ```
