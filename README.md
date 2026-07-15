@@ -90,6 +90,6 @@ python3 coinbase-dca.py sell DOGE-USD aggr 0.5 2 0.005 10000.5
 create orders selling LTC-USD starting at $150 and ending at $500, at every $5 step, selling 114.07908907 LTC total
 
 ```
-python3 coinbase-dca.py sell LTC-USD flat 20 70 5 114.07908907
-python3 coinbase-dca.py sell LTC-USD aggr 20 70 5 114.07908907
+python3 coinbase-dca.py sell LTC-USD flat 150 500 5 114.07908907
+python3 coinbase-dca.py sell LTC-USD aggr 150 500 5 114.07908907
 ```
