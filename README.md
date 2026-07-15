@@ -37,59 +37,45 @@ python3 coinbase-dca.py test
 
 Output should dump a list of accounts.
 
+### Placing Orders
+
+#### BTC-USD
+create orders to buy BTC-USD starting at $100,000 and ending at $10,000, at every $1,000 step, spending $1,000 total
+
+```python3 coinbase-dca.py buy BTC-USD flat 100000 10000 10000 1000```
+
+create orders selling BTC-USD starting at $100,000 and ending at $1,000,000, at every $100,000 step, selling 1.00470762 BTC total
+
+```python3 coinbase-dca.py sell BTC-USD flat 100000 1000000 100000 1.00470762```
+
+#### DOGE-USD
+create orders to buy DOGE-USD starting at $0.50 and ending at $0.05, at every $0.05 step, spending $1,000 total
+
+```python3 coinbase-dca.py buy DOGE-USD flat 0.5 0.05 0.05 1000```
+
+create orders selling DOGE-USD starting at $1.00 and ending at $10.00, at every $1.00 step, selling 10000.5 DOGE total
+
+```python3 coinbase-dca.py sell DOGE-USD flat 1 10 1 10000.5```
+
+#### LTC-USD
+create orders to buy LTC-USD starting at $100 and ending at $10, at every $10 step, spending $1,000 total
+
+```python3 coinbase-dca.py buy LTC-USD flat 100 10 10 1000```
+
+create orders selling LTC-USD starting at $100 and ending at $1000, at every $100 step, selling 114.07908907 LTC total
+
+```python3 coinbase-dca.py sell LTC-USD flat 100 1000 100 114.07908907```
+
 ### Flat vs Aggr
-This script features two modes of buying and selling: flat and aggresive. Flat means every buy or sell order is for the same amount, for example $100. Aggressive means orders are split into thirds, with the first third of orders placed being 1/3 lower amount, annd the last third of orders placed being 1/3 higher. This allows your orders to invest more as the volatility increases.
-
-In the future I would like to implement a smooth gradient of aggressive price changes.
-
-### Buy
-
-#### BTC-USD
-create orders to buy BTC-USD starting at $100,000 and ending at $25,000, at every $250 step, spending $1,000 total
+This script features two modes of buying and selling: flat and aggresive. Flat means every buy or sell order is for the same amount, for example $100. Aggressive modifies prices of each order using the gradient multiplier default of 0.5 to 1.5
 
 ```
-python3 coinbase-dca.py buy BTC-USD flat 100000 25000 250 1000
-python3 coinbase-dca.py buy BTC-USD aggr 100000 25000 250 1000
-```
-
-#### DOGE-USD
-create orders to buy DOGE-USD starting at $0.50 and ending at $0.05, at every $0.005 step, spending $1,000 total
-
-```
-python3 coinbase-dca.py buy DOGE-USD flat 0.5 0.05 0.005 1000
-python3 coinbase-dca.py buy DOGE-USD aggr 0.5 0.05 0.005 1000
-```
-
-#### LTC-USD
-create orders to buy LTC-USD starting at $70 and ending at $20, at every $5 step, spending $1,000 total
-
-```
-python3 coinbase-dca.py buy LTC-USD flat 70 20 5 1000
-python3 coinbase-dca.py buy LTC-USD aggr 70 20 5 1000
-```
-
-### Sell
-
-#### BTC-USD
-create orders selling BTC-USD starting at $100,000 and ending at $300,000, at every $250 step, selling 1.00470762 BTC total
-
-```
-python3 coinbase-dca.py sell BTC-USD flat 100000 300000 250 1.00470762
-python3 coinbase-dca.py sell BTC-USD aggr 100000 300000 250 1.00470762
-```
-
-#### DOGE-USD
-create orders selling DOGE-USD starting at $0.50 and ending at $2.00, at every $0.005 step, selling 10000.5 DOGE total
-
-```
-python3 coinbase-dca.py sell DOGE-USD flat 0.5 2 0.005 10000.5
-python3 coinbase-dca.py sell DOGE-USD aggr 0.5 2 0.005 10000.5
-```
-
-#### LTC-USD
-create orders selling LTC-USD starting at $150 and ending at $500, at every $5 step, selling 114.07908907 LTC total
-
-```
-python3 coinbase-dca.py sell LTC-USD flat 150 500 5 114.07908907
-python3 coinbase-dca.py sell LTC-USD aggr 150 500 5 114.07908907
+python3 coinbase-dca.py buy BTC-USD aggr 100000 10000 15000 1000
+placing limit buy: $71.43 (~0.00071429 $BTC-USD) @ $100000.0
+placing limit buy: $95.24 (~0.00112045 $BTC-USD) @ $85000.0
+placing limit buy: $119.05 (~0.00170068 $BTC-USD) @ $70000.0
+placing limit buy: $142.86 (~0.00259740 $BTC-USD) @ $55000.0
+placing limit buy: $166.67 (~0.00416667 $BTC-USD) @ $40000.0
+placing limit buy: $190.48 (~0.00761905 $BTC-USD) @ $25000.0
+placing limit buy: $214.29 (~0.02142857 $BTC-USD) @ $10000.0
 ```
