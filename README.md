@@ -39,28 +39,52 @@ Output should dump a list of accounts.
 
 ### Buy
 
-create orders to buy BTC-USD starting at $100,000 and ending at $25,000, at every $250 step, investing $1,000 total
+#### BTC-USD
+create orders to buy BTC-USD starting at $100,000 and ending at $25,000, at every $250 step, spending $1,000 total
 
-```python3 coinbase-dca.py buy BTC-USD flat 100000 25000 250 1000```
+```
+python3 coinbase-dca.py buy BTC-USD flat 100000 25000 250 1000
+python3 coinbase-dca.py buy BTC-USD aggr 100000 25000 250 1000
+```
 
-create orders to buy LTC-USD starting at $70 and ending at $20, at every $5 step, investing $1,000 total
+#### DOGE-USD
+create orders to buy DOGE-USD starting at $70 and ending at $20, at every $5 step, spending $1,000 total
 
-```python3 coinbase-dca.py buy LTC-USD flat 70 20 5 1000```
+```
+python3 coinbase-dca.py buy DOGE-USD flat 70 20 5 1000
+python3 coinbase-dca.py buy DOGE-USD aggr 70 20 5 1000
+```
 
-create orders to buy BTC-USD starting at $69,000 and ending at $17,500, at every $250 step, investing $20,000 total
+#### LTC-USD
+create orders to buy LTC-USD starting at $70 and ending at $20, at every $5 step, spending $1,000 total
 
-```python3 coinbase-dca.py buy BTC-USD aggr 69000 17500 250 20000```
+```
+python3 coinbase-dca.py buy LTC-USD flat 70 20 5 1000
+python3 coinbase-dca.py buy LTC-USD aggr 70 20 5 1000
+```
 
 ### Sell
 
-create orders selling BTC-USD starting at $100,000 and ending at $300,000, at every $250 step, selling $1,000 total
+#### BTC-USD
+create orders selling BTC-USD starting at $100,000 and ending at $300,000, at every $250 step, selling 1.00470762 BTC total
 
-```python3 coinbase-dca.py sell BTC-USD flat 100000 300000 250 1000```
+```
+python3 coinbase-dca.py sell BTC-USD flat 100000 300000 250 1.00470762
+python3 coinbase-dca.py sell BTC-USD aggr 100000 300000 250 1.00470762
+```
 
-create orders selling LTC-USD starting at $20 and ending at $70, at every $5 step, selling $1,000 total
+#### DOGE-USD
+create orders selling DOGE-USD starting at $20 and ending at $70, at every $5 step, selling 1.00470762 BTC total
 
-```python3 coinbase-dca.py sell LTC-USD flat 20 70 5 1000```
+```
+python3 coinbase-dca.py sell DOGE-USD flat 20 70 5 1.00470762
+python3 coinbase-dca.py sell DOGE-USD aggr 20 70 5 1.00470762
+```
 
-create orders selling BTC-USD starting at $16,000 and ending at $69,000, at every $250 step, selling $20,000 total
+#### LTC-USD
+create orders selling LTC-USD starting at $20 and ending at $70, at every $5 step, selling 1.00470762 BTC total
 
-```python3 coinbase-dca.py sell BTC-USD aggr 16000 69000 250 20000```
+```
+python3 coinbase-dca.py sell LTC-USD flat 20 70 5 1.00470762
+python3 coinbase-dca.py sell LTC-USD aggr 20 70 5 1.00470762
+```

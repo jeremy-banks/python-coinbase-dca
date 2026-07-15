@@ -17,7 +17,7 @@ def main():
     parser.add_argument("price_start", nargs="?", type=float, default=0)
     parser.add_argument("price_end", nargs="?", type=float, default=0)
     parser.add_argument("price_step", nargs="?", type=float, default=0)
-    parser.add_argument("total_usd", nargs="?", type=float, default=0)
+    parser.add_argument("total_amount", nargs="?", type=float, default=0)
     parser.add_argument("aggr_mod", nargs="?", type=float, default=0)
 
     args = parser.parse_args()
@@ -28,7 +28,7 @@ def main():
     price_start = args.price_start
     price_end = args.price_end
     price_step = args.price_step
-    total_usd = args.total_usd
+    total_amount = args.total_amount
     aggr_mod = args.aggr_mod
 
     round_to_base_size = 8
@@ -58,47 +58,47 @@ def main():
     else:
         price_range = 0
 
-    number_of_orders = round(price_range / price_step)
+    number_of_orders = int(price_range / price_step) + 1
 
-    usd_per_order = total_usd / number_of_orders
-    aggr_usd_per_order_high = round(usd_per_order * 1.34, round_to_price)
-    aggr_usd_per_order_med = round(usd_per_order, round_to_price)
-    aggr_usd_per_order_low = round(usd_per_order * 0.66, round_to_price)
-    # print(aggr_usd_per_order_high)
-    # print(aggr_usd_per_order_med)
-    # print(aggr_usd_per_order_low)
+    amount_per_order = total_amount / number_of_orders
+    aggr_amount_per_order_high = round(amount_per_order * 1.34, round_to_price)
+    aggr_amount_per_order_med = round(amount_per_order, round_to_price)
+    aggr_amount_per_order_low = round(amount_per_order * 0.66, round_to_price)
+    # print(aggr_amount_per_order_high)
+    # print(aggr_amount_per_order_med)
+    # print(aggr_amount_per_order_low)
 
     if side == "buy":
 
         while price >= price_end:
 
             if mode == "flat":
-                base_size = round(usd_per_order / price, round_to_base_size)
+                base_size = round(amount_per_order / price, round_to_base_size)
                 base_size = f"{base_size:.{round_to_base_size}f}"
 
             elif mode == "aggr":
                 if price >= aggr_price_threshold_med:
-                    usd_per_order = aggr_usd_per_order_low
+                    amount_per_order = aggr_amount_per_order_low
                 elif price <= aggr_price_threshold_low:
-                    usd_per_order = aggr_usd_per_order_high
+                    amount_per_order = aggr_amount_per_order_high
                 else:
-                    usd_per_order = aggr_usd_per_order_med
+                    amount_per_order = aggr_amount_per_order_med
 
-                base_size = round(usd_per_order / price, round_to_base_size)
+                base_size = round(amount_per_order / price, round_to_base_size)
 
-            print(f"placing limit buy: ${usd_per_order} (~{base_size} ${product_id}) @ ${price}")
+            print(f"placing limit buy: ${amount_per_order} (~{base_size} ${product_id}) @ ${price}")
 
-            client.create_order(
-                client_order_id=str(uuid.uuid4()),
-                product_id=product_id,
-                side="BUY",
-                order_configuration={
-                    "limit_limit_gtc": {
-                        "base_size": str(base_size),
-                        "limit_price": str(price)
-                    }
-                }
-            )
+            # client.create_order(
+            #     client_order_id=str(uuid.uuid4()),
+            #     product_id=product_id,
+            #     side="BUY",
+            #     order_configuration={
+            #         "limit_limit_gtc": {
+            #             "base_size": str(base_size),
+            #             "limit_price": str(price)
+            #         }
+            #     }
+            # )
 
             price -= price_step
             price = round(price, round_to_price)
@@ -109,32 +109,32 @@ def main():
         while price <= price_end:
 
             if mode == "flat":
-                base_size = round(usd_per_order / price, round_to_base_size)
+                base_size = round(amount_per_order, round_to_base_size)
                 base_size = f"{base_size:.{round_to_base_size}f}"
 
             elif mode == "aggr":
                 if price <= aggr_price_threshold_med:
-                    usd_per_order = aggr_usd_per_order_low
+                    amount_per_order = aggr_amount_per_order_low
                 elif price >= aggr_price_threshold_low:
-                    usd_per_order = aggr_usd_per_order_high
+                    amount_per_order = aggr_amount_per_order_high
                 else:
-                    usd_per_order = aggr_usd_per_order_med
+                    amount_per_order = aggr_amount_per_order_med
 
-                base_size = round(usd_per_order / price, round_to_base_size)
+                base_size = round(amount_per_order, round_to_base_size)
 
-            print(f"placing limit sell: ${usd_per_order} (~{base_size} ${product_id}) @ ${price}")
+            print(f"placing limit sell: ${amount_per_order * price} (~{base_size} ${product_id}) @ ${price}")
 
-            client.create_order(
-                client_order_id=str(uuid.uuid4()),
-                product_id=product_id,
-                side="SELL",
-                order_configuration={
-                    "limit_limit_gtc": {
-                        "base_size": str(base_size),
-                        "limit_price": str(price)
-                    }
-                }
-            )
+            # client.create_order(
+            #     client_order_id=str(uuid.uuid4()),
+            #     product_id=product_id,
+            #     side="SELL",
+            #     order_configuration={
+            #         "limit_limit_gtc": {
+            #             "base_size": str(base_size),
+            #             "limit_price": str(price)
+            #         }
+            #     }
+            # )
 
             price += price_step
             price = round(price, round_to_price)
