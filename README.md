@@ -18,7 +18,7 @@ pip install coinbase-advanced-py
 python3 -m pip install coinbase-advanced-py --break-system-packages
 ```
 
-Generate a Coinbase API key with read and order submission rights.
+Generate a ***ECDSA*** Coinbase API key with read and order submission rights.
 
 Paste the API Key name from Coinbase into script API_KEY
 Paste Private key from Coinbase into script API_SECRET
@@ -67,7 +67,7 @@ create orders selling LTC-USD starting at $100 and ending at $1000, at every $10
 ```python3 coinbase-dca.py sell LTC-USD flat 100 1000 100 114.07908907```
 
 ### Flat vs Aggr
-This script features two modes of buying and selling: flat and aggresive. Flat means every buy or sell order is for the same amount, for example $100. Aggressive modifies prices of each order using the gradient multiplier default of 0.5 to 1.5
+This script features two modes of buying and selling: `flat` and `aggr`. Flat means every buy or sell order is for the same amount, for example $100. Aggressive modifies prices of each order using the gradient multiplier default of 0.5 to 1.5
 
 ```
 python3 coinbase-dca.py buy BTC-USD aggr 100000 10000 15000 1000
