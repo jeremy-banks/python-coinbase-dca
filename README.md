@@ -6,7 +6,7 @@ Specifically, I believe BTC will crash again as it did in Dec 2022, I also belie
 
 There are two ways to achieve this: buy a little every day like Microstrategy and El Salvador, or set up limit buy orders in specific price steps to catch every valuation. Since I am not working with billions like MSTR and El Salvator I have to use the second method.
 
-This script features entering buy and sell orders on Coinbase. Those orders can be "flat" where each order is the same amount, or "weighted" where the first and last orders are ±50% with each order between gradually increasing from -50% to +50%. This script is only tested with BTC-USD, LTC-USD and DOGE-USD.
+This script features entering buy and sell orders on Coinbase. Those orders can be "flat" where each order is the same volume of coin, or "weighted" where order volumes follow a linear gradient ±95% of the baseline volume across the order sequence. This script is only tested with BTC-USD, LTC-USD and DOGE-USD.
 
 ***USE THIS SCRIPT AT YOUR OWN RISK!!!***
 
@@ -47,7 +47,7 @@ create orders to <ins>sell</ins> <ins>BTC-USD</ins> starting at <ins>$100,000</i
 
 ```python3 coinbase-dca.py sell BTC-USD flat 100000 1000000 100000 1.00470762```
 
-Note that BTC-USD and LTC-USD orders can be placed to the hundred-millionth place 0.00000001
+Note that BTC-USD and LTC-USD orders can be placed to the hundred-millionth place ```0.0000000n```
 
 ```python3 coinbase-dca.py sell LTC-USD flat 100 1000 100 114.07908907```
 
@@ -57,4 +57,4 @@ However some coins like DOGE-USD only support tens place 0.1
 
 ## To-Do
 
-1. Confirm when selling an asset in weighted mode that the total amount sold is being added to orders. I have observed that whe setting up orders for BTC-USD that there is approx .1 BTC which is not allocated to an order.
+1. N/A

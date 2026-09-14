@@ -18,7 +18,7 @@ def main():
     parser.add_argument("price_end", nargs="?", type=float, default=0)
     parser.add_argument("price_step", nargs="?", type=float, default=0)
     parser.add_argument("total_amount", nargs="?", type=float, default=0)
-    parser.add_argument("weighted_mod", nargs="?", type=float, default=0.5)
+    parser.add_argument("weighted_mod", nargs="?", type=float, default=0.95)
 
     args = parser.parse_args()
 
@@ -43,6 +43,8 @@ def main():
     if side == "test":
         print(client.get_accounts())
         sys.exit(1)
+
+    order_delay = 0.34 # rate limiter
 
     price = price_start
     weighted_price_threshold_med = round(price_start + (price_end - price_start) * 0.33, round_to_price)
@@ -106,7 +108,7 @@ def main():
 
             price -= price_step
             price = round(price, round_to_price)
-            time.sleep(0.2) # rate limit
+            time.sleep(order_delay)
 
     elif side == "sell":
 
@@ -149,7 +151,7 @@ def main():
 
             price += price_step
             price = round(price, round_to_price)
-            time.sleep(0.2) # rate limit
+            time.sleep(order_delay)
 
 if __name__ == "__main__":
     main()
