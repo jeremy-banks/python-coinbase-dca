@@ -17,8 +17,8 @@ def main():
     parser.add_argument("price_start", nargs="?", type=float, default=0)
     parser.add_argument("price_end", nargs="?", type=float, default=0)
     parser.add_argument("price_step", nargs="?", type=float, default=0)
-    parser.add_argument("total_usd", nargs="?", type=float, default=0)
-    parser.add_argument("aggr_mod", nargs="?", type=float, default=0)
+    parser.add_argument("total_amount", nargs="?", type=float, default=0)
+    parser.add_argument("weighted_mod", nargs="?", type=float, default=0.95)
 
     args = parser.parse_args()
 
@@ -28,8 +28,8 @@ def main():
     price_start = args.price_start
     price_end = args.price_end
     price_step = args.price_step
-    total_usd = args.total_usd
-    aggr_mod = args.aggr_mod
+    total_amount = args.total_amount
+    weighted_mod = args.weighted_mod
 
     round_to_base_size = 8
     round_to_price = 2
@@ -44,12 +44,14 @@ def main():
         print(client.get_accounts())
         sys.exit(1)
 
+    order_delay = 0.34 # rate limiter
+
     price = price_start
-    aggr_price_threshold_med = round(price_start + (price_end - price_start) * 0.33, round_to_price)
-    aggr_price_threshold_low = round(price_start + (price_end - price_start) * 0.66, round_to_price)
+    weighted_price_threshold_med = round(price_start + (price_end - price_start) * 0.33, round_to_price)
+    weighted_price_threshold_low = round(price_start + (price_end - price_start) * 0.66, round_to_price)
     # print(price_start)
-    # print(aggr_price_threshold_med)
-    # print(aggr_price_threshold_low)
+    # print(weighted_price_threshold_med)
+    # print(weighted_price_threshold_low)
 
     if side == "buy":
         price_range = price_start - price_end
@@ -58,35 +60,39 @@ def main():
     else:
         price_range = 0
 
-    number_of_orders = round(price_range / price_step)
+    number_of_orders = int(price_range / price_step) + 1
 
-    usd_per_order = total_usd / number_of_orders
-    aggr_usd_per_order_high = round(usd_per_order * 1.34, round_to_price)
-    aggr_usd_per_order_med = round(usd_per_order, round_to_price)
-    aggr_usd_per_order_low = round(usd_per_order * 0.66, round_to_price)
-    # print(aggr_usd_per_order_high)
-    # print(aggr_usd_per_order_med)
-    # print(aggr_usd_per_order_low)
+    amount_per_order = total_amount / number_of_orders
+
+    weighted_start_multiplier = 1 - weighted_mod
+    weighted_end_multiplier = 1 + weighted_mod
 
     if side == "buy":
 
         while price >= price_end:
 
             if mode == "flat":
-                base_size = round(usd_per_order / price, round_to_base_size)
-                base_size = f"{base_size:.{round_to_base_size}f}"
+                base_size = round(amount_per_order / price, round_to_base_size)
+                order_amount = amount_per_order
 
-            elif mode == "aggr":
-                if price >= aggr_price_threshold_med:
-                    usd_per_order = aggr_usd_per_order_low
-                elif price <= aggr_price_threshold_low:
-                    usd_per_order = aggr_usd_per_order_high
-                else:
-                    usd_per_order = aggr_usd_per_order_med
+            elif mode == "weighted":
 
-                base_size = round(usd_per_order / price, round_to_base_size)
+                order_index = int((price_start - price) / price_step)
 
-            print(f"placing limit buy: ${usd_per_order} (~{base_size} ${product_id}) @ ${price}")
+                progress = order_index / (number_of_orders - 1)
+
+                multiplier = (
+                    weighted_start_multiplier +
+                    (weighted_end_multiplier - weighted_start_multiplier) * progress
+                )
+
+                order_amount = amount_per_order * multiplier
+
+                base_size = round(order_amount / price, round_to_base_size)
+
+            base_size = f"{base_size:.{round_to_base_size}f}"
+
+            print(f"placing limit buy: ${round(order_amount, 2)} (~{base_size} ${product_id}) @ ${price}")
 
             client.create_order(
                 client_order_id=str(uuid.uuid4()),
@@ -102,27 +108,34 @@ def main():
 
             price -= price_step
             price = round(price, round_to_price)
-            time.sleep(0.2) # rate limit
+            time.sleep(order_delay)
 
     elif side == "sell":
 
         while price <= price_end:
 
             if mode == "flat":
-                base_size = round(usd_per_order / price, round_to_base_size)
-                base_size = f"{base_size:.{round_to_base_size}f}"
+                base_size = round(amount_per_order, round_to_base_size)
+                order_amount = amount_per_order
 
-            elif mode == "aggr":
-                if price <= aggr_price_threshold_med:
-                    usd_per_order = aggr_usd_per_order_low
-                elif price >= aggr_price_threshold_low:
-                    usd_per_order = aggr_usd_per_order_high
-                else:
-                    usd_per_order = aggr_usd_per_order_med
+            elif mode == "weighted":
 
-                base_size = round(usd_per_order / price, round_to_base_size)
+                order_index = int((price - price_start) / price_step)
 
-            print(f"placing limit sell: ${usd_per_order} (~{base_size} ${product_id}) @ ${price}")
+                progress = order_index / (number_of_orders - 1)
+
+                multiplier = (
+                    weighted_start_multiplier +
+                    (weighted_end_multiplier - weighted_start_multiplier) * progress
+                )
+
+                order_amount = amount_per_order * multiplier
+
+                base_size = round(order_amount, round_to_base_size)
+
+            base_size = f"{base_size:.{round_to_base_size}f}"
+
+            print(f"placing limit sell: ${round(order_amount * price, 2)} (~{base_size} ${product_id}) @ ${price}")
 
             client.create_order(
                 client_order_id=str(uuid.uuid4()),
@@ -138,7 +151,7 @@ def main():
 
             price += price_step
             price = round(price, round_to_price)
-            time.sleep(0.2) # rate limit
+            time.sleep(order_delay)
 
 if __name__ == "__main__":
     main()
