@@ -18,7 +18,7 @@ def main():
     parser.add_argument("price_end", nargs="?", type=float, default=0)
     parser.add_argument("price_step", nargs="?", type=float, default=0)
     parser.add_argument("total_amount", nargs="?", type=float, default=0)
-    parser.add_argument("aggr_mod", nargs="?", type=float, default=0.5)
+    parser.add_argument("weighted_mod", nargs="?", type=float, default=0.5)
 
     args = parser.parse_args()
 
@@ -29,7 +29,7 @@ def main():
     price_end = args.price_end
     price_step = args.price_step
     total_amount = args.total_amount
-    aggr_mod = args.aggr_mod
+    weighted_mod = args.weighted_mod
 
     round_to_base_size = 8
     round_to_price = 2
@@ -45,11 +45,11 @@ def main():
         sys.exit(1)
 
     price = price_start
-    aggr_price_threshold_med = round(price_start + (price_end - price_start) * 0.33, round_to_price)
-    aggr_price_threshold_low = round(price_start + (price_end - price_start) * 0.66, round_to_price)
+    weighted_price_threshold_med = round(price_start + (price_end - price_start) * 0.33, round_to_price)
+    weighted_price_threshold_low = round(price_start + (price_end - price_start) * 0.66, round_to_price)
     # print(price_start)
-    # print(aggr_price_threshold_med)
-    # print(aggr_price_threshold_low)
+    # print(weighted_price_threshold_med)
+    # print(weighted_price_threshold_low)
 
     if side == "buy":
         price_range = price_start - price_end
@@ -62,8 +62,8 @@ def main():
 
     amount_per_order = total_amount / number_of_orders
 
-    aggr_start_multiplier = 1 - aggr_mod
-    aggr_end_multiplier = 1 + aggr_mod
+    weighted_start_multiplier = 1 - weighted_mod
+    weighted_end_multiplier = 1 + weighted_mod
 
     if side == "buy":
 
@@ -73,15 +73,15 @@ def main():
                 base_size = round(amount_per_order / price, round_to_base_size)
                 order_amount = amount_per_order
 
-            elif mode == "aggr":
+            elif mode == "weighted":
 
                 order_index = int((price_start - price) / price_step)
 
                 progress = order_index / (number_of_orders - 1)
 
                 multiplier = (
-                    aggr_start_multiplier +
-                    (aggr_end_multiplier - aggr_start_multiplier) * progress
+                    weighted_start_multiplier +
+                    (weighted_end_multiplier - weighted_start_multiplier) * progress
                 )
 
                 order_amount = amount_per_order * multiplier
@@ -116,15 +116,15 @@ def main():
                 base_size = round(amount_per_order, round_to_base_size)
                 order_amount = amount_per_order
 
-            elif mode == "aggr":
+            elif mode == "weighted":
 
                 order_index = int((price - price_start) / price_step)
 
                 progress = order_index / (number_of_orders - 1)
 
                 multiplier = (
-                    aggr_start_multiplier +
-                    (aggr_end_multiplier - aggr_start_multiplier) * progress
+                    weighted_start_multiplier +
+                    (weighted_end_multiplier - weighted_start_multiplier) * progress
                 )
 
                 order_amount = amount_per_order * multiplier
