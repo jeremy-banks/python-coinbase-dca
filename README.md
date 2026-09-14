@@ -1,14 +1,14 @@
 # python-coinbase-dca
 
-I built this script to quickly and easily take advantage of the volatility in crypto.
+I built this script to take advantage of the volatility in crypto.
 
-Specifically, I believe BTC will crash again as it did in Dec 2022, and I also believe it will reach a new all-time high relatively shortly thereafter. Everything I know about finance and economics says the best strategy for investing in a volatile asset is to use dollar cost averaging. There are two ways to achieve this: buy a little every day like Microstrategy and El Salvador, or set up limit buy orders in specific price steps to catch every valuation. Since I am not working with billions like MSTR and El Salvator, I have to use the second method.
+Specifically, I believe BTC will crash again as it did in Dec 2022, I also believe it will reach a new all-time high relatively shortly thereafter, and I believe it will continue to be a volatile asset in the future. Everything I know about finance and economics says the best strategy for investing in a volatile asset is to use **dollar cost averaging**.
 
-I wrote that in Dec, and am updating this script in Feb after the dip to 60k. This script worked exactly as intended. I am revising the script and documentation deciding to invest even more in this current dip. I believe BTC will continue to occilate, and I plan to use this script to exploit each opportunity.
+There are two ways to achieve this: buy a little every day like Microstrategy and El Salvador, or set up limit buy orders in specific price steps to catch every valuation. Since I am not working with billions like MSTR and El Salvator I have to use the second method.
 
-## WARNING
+This script features entering buy and sell orders on Coinbase. Those orders can be "flat" where each order is the same amount, or "weighted" where the first and last orders are ±50% with each order between gradually increasing from -50% to +50%. This script is only tested with BTC-USD, LTC-USD and DOGE-USD.
 
-Only tested with BTC-USD, LTC-USD and DOGE-USD. ***USE AT YOUR OWN RISK!!!***
+***USE THIS SCRIPT AT YOUR OWN RISK!!!***
 
 ## Set Up
 
@@ -27,8 +27,6 @@ API_KEY = "organizations/{org_id}/apiKeys/{key_id}"
 API_SECRET = """-----BEGIN EC PRIVATE KEY-----\nYOUR PRIVATE KEY\n-----END EC PRIVATE KEY-----\n"""
 ```
 
-## Usage
-
 ### Test
 
 ```
@@ -37,45 +35,22 @@ python3 coinbase-dca.py test
 
 Output should dump a list of accounts.
 
-### Placing Orders
+## Usage
 
-#### BTC-USD
-create orders to buy BTC-USD starting at $100,000 and ending at $10,000, at every $1,000 step, spending $1,000 total
+### BTC-USD
+
+create orders to <ins>buy</ins> <ins>BTC-USD</ins> starting at <ins>$100,000</ins> and ending at <ins>$10,000</ins>, at every <ins>$1,000</ins> step, spending <ins>$1,000</ins> total
 
 ```python3 coinbase-dca.py buy BTC-USD flat 100000 10000 10000 1000```
 
-create orders selling BTC-USD starting at $100,000 and ending at $1,000,000, at every $100,000 step, selling 1.00470762 BTC total
+create orders to <ins>sell</ins> <ins>BTC-USD</ins> starting at <ins>$100,000</ins> and ending at <ins>$1,000,000</ins>, at every <ins>$100,000</ins> step, selling <ins>1.00470762</ins> BTC total
 
 ```python3 coinbase-dca.py sell BTC-USD flat 100000 1000000 100000 1.00470762```
 
-#### DOGE-USD
-create orders to buy DOGE-USD starting at $0.50 and ending at $0.05, at every $0.05 step, spending $1,000 total
-
-```python3 coinbase-dca.py buy DOGE-USD flat 0.5 0.05 0.05 1000```
-
-create orders selling DOGE-USD starting at $1.00 and ending at $10.00, at every $1.00 step, selling 10000.5 DOGE total
-
-```python3 coinbase-dca.py sell DOGE-USD flat 1 10 1 10000.5```
-
-#### LTC-USD
-create orders to buy LTC-USD starting at $100 and ending at $10, at every $10 step, spending $1,000 total
-
-```python3 coinbase-dca.py buy LTC-USD flat 100 10 10 1000```
-
-create orders selling LTC-USD starting at $100 and ending at $1000, at every $100 step, selling 114.07908907 LTC total
+Note that BTC-USD and LTC-USD orders can be placed to the hundred-millionth place 0.00000001
 
 ```python3 coinbase-dca.py sell LTC-USD flat 100 1000 100 114.07908907```
 
-### Flat vs Aggr
-This script features two modes of buying and selling: `flat` and `aggr`. Flat means every buy or sell order is for the same amount, for example $100. Aggressive modifies prices of each order using the gradient multiplier default of 0.5 to 1.5
+However some coins like DOGE-USD only support tens place 0.1
 
-```
-python3 coinbase-dca.py buy BTC-USD aggr 100000 10000 15000 1000
-placing limit buy: $71.43 (~0.00071429 $BTC-USD) @ $100000.0
-placing limit buy: $95.24 (~0.00112045 $BTC-USD) @ $85000.0
-placing limit buy: $119.05 (~0.00170068 $BTC-USD) @ $70000.0
-placing limit buy: $142.86 (~0.00259740 $BTC-USD) @ $55000.0
-placing limit buy: $166.67 (~0.00416667 $BTC-USD) @ $40000.0
-placing limit buy: $190.48 (~0.00761905 $BTC-USD) @ $25000.0
-placing limit buy: $214.29 (~0.02142857 $BTC-USD) @ $10000.0
-```
+```python3 coinbase-dca.py sell DOGE-USD flat 1 10 1 10000.5```
