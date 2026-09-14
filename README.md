@@ -54,3 +54,7 @@ Note that BTC-USD and LTC-USD orders can be placed to the hundred-millionth plac
 However some coins like DOGE-USD only support tens place 0.1
 
 ```python3 coinbase-dca.py sell DOGE-USD flat 1 10 1 10000.5```
+
+## To-Do
+
+1. Confirm when selling an asset in weighted mode that the total amount sold is being added to orders. I have observed that whe setting up orders for BTC-USD that there is approx .1 BTC which is not allocated to an order.
