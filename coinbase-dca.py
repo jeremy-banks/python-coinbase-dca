@@ -69,6 +69,7 @@ def main():
     match side:
         case "buy": price_range = price_start - price_end
         case "sell": price_range = price_end - price_start
+        case _: handle_fail(f"Unsupported side: {side}")
 
     number_of_orders = int(price_range / price_step) + 1
 
@@ -165,8 +166,6 @@ def main():
                 price += price_step
                 price = round(price, round_to_price)
                 time.sleep(order_delay)
-
-        case _: handle_fail(f"Unsupported side: {side}")
 
 if __name__ == "__main__":
     main()
