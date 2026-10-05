@@ -41,9 +41,13 @@ create orders for <ins>BTC-USD</ins> to <ins>buy</ins> starting at <ins>$100,000
 
 ```python3 coinbase-dca.py BTC-USD buy flat 100000 10000 10000 1000```
 
-create orders for <ins>BTC-USD</ins> to <ins>sell</ins> starting at <ins>$100,000</ins> and ending at <ins>$1,000,000</ins>, at every <ins>$100,000</ins> step, selling <ins>1.00470762</ins> BTC total
+```python3 coinbase-dca.py BTC-USD buy weighted 100000 10000 10000 1000```
 
-```python3 coinbase-dca.py BTC-USD sell flat 100000 1000000 100000 1.00470762```
+create orders for <ins>BTC-USD</ins> to <ins>sell</ins> starting at <ins>$100,000</ins> and ending at <ins>$1,000,000</ins>, at every <ins>$100,000</ins> step, selling <ins>1</ins> BTC total
+
+```python3 coinbase-dca.py BTC-USD sell flat 100000 1000000 100000 1```
+
+```python3 coinbase-dca.py BTC-USD sell weighted 100000 1000000 100000 1```
 
 Note that BTC-USD and LTC-USD orders can be placed to the hundred-millionth place ```0.0000000n```
 

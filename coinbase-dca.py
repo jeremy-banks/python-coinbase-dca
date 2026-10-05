@@ -41,16 +41,19 @@ def main():
             sys.exit(1)
 
         case ( "BTC-USD" | "LTC-USD" ):
-            round_to_base_size = 8
-            round_to_price = 2
+            base_size_round_to = 8
+            base_size_min = 0.00000001
+            price_round_to = 2.0
 
-        case ( "DOGE-USD"| "PUMP-USD" ):
-            round_to_base_size = 1
-            round_to_price = 5
+        case ( "DOGE-USD" ):
+            base_size_round_to = 1
+            base_size_min = 0.1
+            price_round_to = 5.0
 
         case "PUMP-USD":
-            round_to_base_size = 1
-            round_to_price = 6
+            base_size_round_to = 0
+            base_size_min = 1.0
+            price_round_to = 6.0
 
         case _: handle_fail(f"Unsupported underlying: {underlying}")
 
@@ -59,11 +62,7 @@ def main():
     order_delay = 0.34 # rate limiter
 
     price = price_start
-    weighted_price_threshold_med = round(price_start + (price_end - price_start) * 0.33, round_to_price)
-    weighted_price_threshold_low = round(price_start + (price_end - price_start) * 0.66, round_to_price)
     # print(price_start)
-    # print(weighted_price_threshold_med)
-    # print(weighted_price_threshold_low)
 
     price_range = 0
     match side:
@@ -72,7 +71,6 @@ def main():
         case _: handle_fail(f"Unsupported side: {side}")
 
     number_of_orders = int(price_range / price_step) + 1
-
     amount_per_order = total_amount / number_of_orders
 
     weighted_start_multiplier = 1 - weighted_mod
@@ -84,7 +82,7 @@ def main():
 
                 match mode:
                     case "flat":
-                        base_size = round(amount_per_order / price, round_to_base_size)
+                        base_size = round(amount_per_order / price, base_size_round_to)
                         order_amount = amount_per_order
 
                     case "weighted":
@@ -99,13 +97,13 @@ def main():
 
                         order_amount = amount_per_order * multiplier
 
-                        base_size = round(order_amount / price, round_to_base_size)
+                        base_size = round(order_amount / price, base_size_round_to)
 
                     case _: handle_fail(f"Unsupported mode: {mode}")
 
-                base_size = f"{base_size:.{round_to_base_size}f}"
+                if base_size < base_size_min: handle_fail(f"base_size: {base_size} is smaller than base_size_min: {base_size_min}")
 
-                print(f"placing limit buy: ${round(order_amount, 2)} (~{base_size} ${underlying}) @ ${price}")
+                print(f"{underlying} {side} {mode} {base_size:.{base_size_round_to}f} @ ${price} = ${base_size * price:.2f}")
 
                 client.create_order(
                     client_order_id=str(uuid.uuid4()),
@@ -120,7 +118,7 @@ def main():
                 )
 
                 price -= price_step
-                price = round(price, round_to_price)
+                price = round(price, int(price_round_to))
                 time.sleep(order_delay)
 
         case "sell":
@@ -128,7 +126,7 @@ def main():
 
                 match mode:
                     case "flat":
-                        base_size = round(amount_per_order, round_to_base_size)
+                        base_size = round(amount_per_order, base_size_round_to)
                         order_amount = amount_per_order
 
                     case "weighted":
@@ -143,13 +141,13 @@ def main():
 
                         order_amount = amount_per_order * multiplier
 
-                        base_size = round(order_amount, round_to_base_size)
+                        base_size = round(order_amount, base_size_round_to)
                         
                     case _: handle_fail(f"Unsupported mode: {mode}")
 
-                base_size = f"{base_size:.{round_to_base_size}f}"
+                if base_size < base_size_min: handle_fail(f"base_size: {base_size} is smaller than base_size_min: {base_size_min}")
 
-                print(f"placing limit sell: ${round(order_amount * price, 2)} (~{base_size} ${underlying}) @ ${price}")
+                print(f"{underlying} {side} {mode} {base_size:.{base_size_round_to}f} @ ${price} = ${base_size * price:.2f}")
 
                 client.create_order(
                     client_order_id=str(uuid.uuid4()),
@@ -164,7 +162,7 @@ def main():
                 )
 
                 price += price_step
-                price = round(price, round_to_price)
+                price = round(price, int(price_round_to))
                 time.sleep(order_delay)
 
 if __name__ == "__main__":
