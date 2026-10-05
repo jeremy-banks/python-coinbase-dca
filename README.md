@@ -6,7 +6,7 @@ Specifically, I believe BTC will crash again as it did in Dec 2022, I also belie
 
 There are two ways to achieve this: buy a little every day like Microstrategy and El Salvador, or set up limit buy orders in specific price steps to catch every valuation. Since I am not working with billions like MSTR and El Salvator I have to use the second method.
 
-This script features entering buy and sell orders on Coinbase. Those orders can be "flat" where each order is the same volume of coin, or "weighted" where order volumes follow a linear gradient ±95% of the baseline volume across the order sequence. This script is only tested with BTC-USD, LTC-USD and DOGE-USD.
+This script features entering buy and sell orders on Coinbase. Those orders can be "flat" where each order is the same volume of coin, or "weighted" where order volumes follow a linear gradient ±95% of the baseline volume across the order sequence. This script is only tested with BTC-USD, DOGE-USD, LTC-USD and PUMP-USD.
 
 ***USE THIS SCRIPT AT YOUR OWN RISK!!!***
 
@@ -29,9 +29,7 @@ API_SECRET = """-----BEGIN EC PRIVATE KEY-----\nYOUR PRIVATE KEY\n-----END EC PR
 
 ### Test
 
-```
-python3 coinbase-dca.py test
-```
+`python3 coinbase-dca.py test`
 
 Output should dump a list of accounts.
 
@@ -39,21 +37,25 @@ Output should dump a list of accounts.
 
 ### BTC-USD
 
-create orders to <ins>buy</ins> <ins>BTC-USD</ins> starting at <ins>$100,000</ins> and ending at <ins>$10,000</ins>, at every <ins>$1,000</ins> step, spending <ins>$1,000</ins> total
+create orders for <ins>BTC-USD</ins> to <ins>buy</ins> starting at <ins>$100,000</ins> and ending at <ins>$10,000</ins>, at every <ins>$1,000</ins> step, spending <ins>$1,000</ins> total
 
-```python3 coinbase-dca.py buy BTC-USD flat 100000 10000 10000 1000```
+```python3 coinbase-dca.py BTC-USD buy flat 100000 10000 10000 1000```
 
-create orders to <ins>sell</ins> <ins>BTC-USD</ins> starting at <ins>$100,000</ins> and ending at <ins>$1,000,000</ins>, at every <ins>$100,000</ins> step, selling <ins>1.00470762</ins> BTC total
+```python3 coinbase-dca.py BTC-USD buy weighted 100000 10000 10000 1000```
 
-```python3 coinbase-dca.py sell BTC-USD flat 100000 1000000 100000 1.00470762```
+create orders for <ins>BTC-USD</ins> to <ins>sell</ins> starting at <ins>$100,000</ins> and ending at <ins>$1,000,000</ins>, at every <ins>$100,000</ins> step, selling <ins>1</ins> BTC total
+
+```python3 coinbase-dca.py BTC-USD sell flat 100000 1000000 100000 1```
+
+```python3 coinbase-dca.py BTC-USD sell weighted 100000 1000000 100000 1```
 
 Note that BTC-USD and LTC-USD orders can be placed to the hundred-millionth place ```0.0000000n```
 
-```python3 coinbase-dca.py sell LTC-USD flat 100 1000 100 114.07908907```
+```python3 coinbase-dca.py LTC-USD sell flat 100 1000 100 114.07908907```
 
 However some coins like DOGE-USD only support tens place 0.1
 
-```python3 coinbase-dca.py sell DOGE-USD flat 1 10 1 10000.5```
+```python3 coinbase-dca.py DOGE-USD sell flat 1 10 1 10000.5```
 
 ## To-Do
 
